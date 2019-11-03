@@ -1,0 +1,17 @@
+{
+  "size": {
+    "small": 5.99,
+    "medium": 7.99,
+    "large": 10.99
+  },
+  "toppings": {
+    "bacon": 0.99,
+    "pepperoni": 0.99,
+    "mushroom": 0.99,
+    "olive": 0.99,
+    "basil": 0.99,
+    "sweetcorn": 0.99,
+    "onion": 0.99,
+    "tomato": 0.99
+  }
+}

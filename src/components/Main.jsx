@@ -8,18 +8,27 @@ import Routes from './Routes';
 
 export default function Main() {
   return (
-    <Container>
-      <Router>
-        <Header />
-        <Row>
-          <Col>
-            <Sidebar />
-          </Col>
-          <Col>
-            <Routes />
-          </Col>
-        </Row>
-      </Router>
-    </Container>
+    <>
+      <div className="gradient"></div>
+      <Container>
+        <Router>
+          <Header />
+          <Content />
+        </Router>
+      </Container>
+    </>
+  );
+}
+
+function Content() {
+  return (
+    <Row>
+      <Col md={3} lg={2}>
+        <Sidebar />
+      </Col>
+      <Col>
+        <Routes />
+      </Col>
+    </Row>
   );
 }

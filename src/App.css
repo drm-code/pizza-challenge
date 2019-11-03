@@ -1,3 +1,126 @@
 .pa-logo {
   height: 60px;
 }
+
+.gradient {
+  position: absolute;
+  width: 100%;
+  height: 400px;
+  background: rgb(2,0,36);
+  background: linear-gradient(180deg, rgba(6, 38, 98, 1) 23%, rgba(3, 20, 51, 1) 77%);
+}
+
+.content {
+  border-radius: 5px;
+  background-color: #FFF;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+.border-right {
+  border-right: 1px solid gray;
+}
+
+.border-bottom {
+  border-bottom: 1px solid gray;
+}
+
+.pa-success {
+  color: rgba(34,216,175,0.7);
+}
+.pa-danger {
+  color: rgba(232,47,83,0.7);
+}
+.pa-bg-success,
+.pa-success .progress-bar,
+.pa-stacked-success.progress-bar {
+  background-color: rgba(34,216,175,0.7);
+}
+.pa-bg-danger,
+.pa-danger .progress-bar,
+.pa-stacked-danger.progress-bar {
+  background-color: rgba(232,47,83,0.7);
+}
+.pa-bg-info {
+  background-color: #007bff;
+}
+
+.pa-pizza-size-toggle {
+  border-radius: .25rem!important;
+  margin-right: 20px;
+  background-color: transparent;
+  color: #007bff;
+}
+
+.pa-topping-selected {
+  color: #fff;
+  border-radius: .25rem;
+}
+
+.pa-topping input {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+}
+
+.pa-topping label {
+  padding-left: 1rem;
+}
+
+.pa-topping label:before,
+.pa-topping label:after {
+  position: absolute;
+  top: 0.65rem;
+  left: 10px;
+  display: block;
+  width: 1.2rem;
+  height: 1.2rem;
+  content: '';
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+}
+
+.pa-topping label:before {
+  pointer-events: none;
+  user-select: none;
+}
+
+.pa-topping label:after {
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 50% 50%;
+  background: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3E%3C/svg%3E");
+}
+
+.nav-link {
+  border-left: 3px solid transparent;
+}
+.nav-link.active {
+  border-left: 3px solid #fff;
+}
+
+.pa-sm-progress {
+  height: 0.4rem;
+}
+.pa-status-progressbar {
+  width: 350px;
+  height: 0.6rem;
+}
+
+.point {
+  width: 15px;
+  height: 15px;
+  border-radius: 20px;
+}
+
+.point-label {
+  line-height: 0.9rem;
+}
+
+@media print {
+  Header, #Sidebar, .no-print {
+    display: none!important;
+  }
+  #Orders {
+    width: 100%;
+  }
+}

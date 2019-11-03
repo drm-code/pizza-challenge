@@ -1,32 +1,32 @@
 import React from 'react';
 import { Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 export default function Sidebar() {
   return (
-    <Nav className="flex-column">
-      <Link
+    <Nav className="flex-column" id="Sidebar">
+      <NavLink
         to="/dashboard"
-        className="nav-link"
+        className="nav-link text-white"
         role="button"
       >
         <FontAwesomeIcon icon="th-large" />{' Dashboard'}
-      </Link>
-      <Link
+      </NavLink>
+      <NavLink
         to="/new-order"
-        className="nav-link"
+        className="nav-link text-white"
         role="button"
       >
         <FontAwesomeIcon icon={['far', 'window-maximize']} />{' New Order'}
-      </Link>
-      <Link
+      </NavLink>
+      <NavLink
         to="/status"
-        className="nav-link"
+        className="nav-link text-white"
         role="button"
       >
         <FontAwesomeIcon icon="cube" />{' Status'}
-      </Link>
+      </NavLink>
     </Nav>
   );
 }
