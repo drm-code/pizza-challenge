@@ -1,38 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Row, Col, Form, Button, Accordion, Card, ToggleButtonGroup, ToggleButton,
   Modal, Alert
 } from 'react-bootstrap';
 
 import Api from './../api/api';
+import Context from './../store/context';
 
 export default function Order() {
+  const {state, dispatch} = useContext(Context);
+  const [prices, setPrices] = useState({});
+  const pizzas = state.pizzas || [];
   const name = useFormInput('');
   const email = useFormInput('');
   const address = useFormInput('');
   const contactNumber = useFormInput('');
-  const [pizzas, setPizzas] = useState([]);
   const [visibleAlert, setVisibleAlert] = useState(false);
-  const [pizzaTemplate, setPizzaTemplate] = useState({});
   const [totalOrder, setTotalOrder] = useState(0);
   const [confirmModal, setConfirmModal] = useState(false);
-  const newPizza = {
+  const pizzaTemplate = {
     size: 'small',
     toppings: []
   };
 
   useEffect(() => {
-    const template = [{ size: 'small', toppings: [] }];
-    Api.getPizzaSummary(template).then(({ data }) => {
-      setPizzaTemplate(data);
-    });      
+    Api.getPrices().then(({ data }) => {
+      setPrices(data);
+    }, err => {});
   }, []);
-  
+
   useEffect(() => {
-    Api.getPizzaSummary(pizzas).then(({ data }) => {
-      setTotalOrder(data.total);
+    const totalSizes = pizzas.reduce((a, b) => a + prices.size[b.size], 0);
+    let totalToppings = 0;
+    pizzas.forEach((pizza) => {
+      totalToppings += pizza.toppings.reduce((a, b) => a + prices.toppings[b], 0);
     });
-  }, [pizzas]);
+    const fullTotal = totalSizes + totalToppings;
+    setTotalOrder(fullTotal);
+  }, [pizzas, prices]);
 
   function useFormInput(initialValue) {
     const [value, setValue] = useState(initialValue);
@@ -40,7 +45,7 @@ export default function Order() {
       setValue(e.target.value);
       if (visibleAlert) setVisibleAlert(false);
     }
-
+    
     return {
       value,
       onChange: handleChange,
@@ -49,10 +54,13 @@ export default function Order() {
 
   function addPizza() {
     if (name.value !== '' && address.value !== '' && contactNumber.value !== '') {
-      setPizzas([
-        ...pizzas,
-        newPizza
-      ]);
+      dispatch({
+        type: 'SET_PIZZAS',
+        payload: [
+          ...pizzas,
+          pizzaTemplate
+        ]
+      });
     } else {
       setVisibleAlert(true);
     }
@@ -61,7 +69,10 @@ export default function Order() {
   function setPizzaSize(size, index) {
     const updated = [ ...pizzas ];
     updated[index].size = size;
-    setPizzas([ ...updated ]);
+    dispatch({
+      type: 'SET_PIZZAS',
+      payload: [ ...updated ]
+    });
   }
   
   function setTopping(e, index, topping) {
@@ -71,15 +82,22 @@ export default function Order() {
     } else {
       updated[index].toppings = updated[index].toppings.filter(t => t !== topping);
     }
-    setPizzas([ ...updated ]);
+    dispatch({
+      type: 'SET_PIZZAS',
+      payload: [ ...updated ]
+    });
   }
 
   function removePizza(pIndex) {
-    setPizzas([ ...pizzas.filter((pizza, index) => index !== pIndex) ]);
+    const updated = [ ...pizzas.filter((pizza, index) => index !== pIndex) ];
+    dispatch({
+      type: 'SET_PIZZAS',
+      payload: [ ...updated ]
+    });
   }
 
   function placeOrder() {
-    const data = {
+    const payload = {
       personalDetails: {
         name: name.value,
         email: email.value,
@@ -89,17 +107,18 @@ export default function Order() {
       order: [ ...pizzas ]
     };
 
-    Api.submitOrder(data).then(() => {
+    Api.submitOrder(payload).then(({ data }) => {
       const blank = { target: { value: '' }};
       name.onChange(blank);
       email.onChange(blank);
       address.onChange(blank);
       contactNumber.onChange(blank);
-      setPizzas([]);
+      dispatch({
+        type: 'SET_PIZZAS',
+        payload: []
+      });
       setConfirmModal(true);
-    }, (error) => {
-      console.log(error);
-    });
+    }, err => {});
   }
 
   return (
@@ -181,7 +200,7 @@ export default function Order() {
                               name="size"
                               className="mb-5"
                             >
-                              {Object.keys(pizzaTemplate.size).map((size) => (
+                              {Object.keys(prices.size).map((size) => (
                                 <ToggleButton
                                   className="pa-pizza-size-toggle"
                                   key={Math.random()}
@@ -198,7 +217,7 @@ export default function Order() {
                           <Col>
                             <p className="h6">Pick your toppings</p>
                             <Row>
-                              {Object.keys(pizzaTemplate.toppings).map((topping, toppingIndex) => (
+                              {Object.keys(prices.toppings).map((topping, toppingIndex) => (
                                 <Col
                                   md={3}
                                   key={Math.random()}
@@ -234,7 +253,7 @@ export default function Order() {
                         <p className="h5 mb-0 font-weight-bold float-right text-capitalize">{`${pizza.size} Pizza ${pizzaIndex+1}`}</p>
                       </Col>
                       <Col>
-                        <p className="h5 mb-0 font-weight-bold float-right">{+pizzaTemplate.size[pizza.size].toFixed(2)}</p>
+                        <p className="h5 mb-0 font-weight-bold float-right">{+prices.size[pizza.size].toFixed(2)}</p>
                       </Col>
                     </Row>
                     {pizza.toppings.map((topping) => (
@@ -243,7 +262,7 @@ export default function Order() {
                           <p className="float-right mb-0 text-capitalize">{topping}</p>
                         </Col>
                         <Col>
-                          <p className="float-right mb-0">{+pizzaTemplate.toppings[topping].toFixed(2)}</p>
+                          <p className="float-right mb-0">{+prices.toppings[topping].toFixed(2)}</p>
                         </Col>
                       </Row>
                     ))}

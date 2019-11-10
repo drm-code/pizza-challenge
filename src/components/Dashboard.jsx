@@ -8,7 +8,7 @@ import {
 } from 'react-circular-progressbar';
 import {
   AreaChart, Area, XAxis, ResponsiveContainer, CartesianGrid, Tooltip
-} from 'recharts';
+} from 'recharts';  
 
 import Context from './../store/context';
 import Api from './../api/api';
@@ -16,34 +16,24 @@ import Api from './../api/api';
 export default function Dashboard() {
   const { state, dispatch } = useContext(Context);
   const dashboard = state.dashboard || {};
+  const totalOrders = dashboard.totalOrders || 0;
   const completed = dashboard.completed || 0;
   const pendings = dashboard.pendings || 0;
-  const totalOrders = completed + pendings;
+  const cancelled = dashboard.cancelled || 0;
   const totalSales = dashboard.totalSales || 0;
   const areaData = dashboard.areaData || [];
   const totalPercentCompleted = dashboard.totalPercentCompleted || 0;
-  const totalPercentPending = dashboard.totalPercentPending || 0;
-  const performace = totalPercentCompleted - totalPercentPending;
+  const totalPercentPendings = dashboard.totalPercentPendings || 0;
+  const performance = totalPercentCompleted - totalPercentPendings;
 
   useEffect(() => {
-    Api.getDashboardReport()
-      .then(({ data }) => {
-        const areaData = data.timeAndOrders.time.map((item, index) => ({
-          time: item,
-          orders: data.timeAndOrders.orders[index]
-        })).sort((a, b) => {
-          if (a.time < b.time) return -1;
-          if (a.time > b.time) return 1;
-          return 0;
-        });
-        dispatch({
-          type: 'LOAD_DASHBOARD',
-          payload: {
-            ...data,
-            areaData
-          }
-        });
+    Api.getDashboardReport().then(({ data }) => {
+      data.areaData.sort((a, b) => a.index - b.index);
+      dispatch({
+        type: 'SET_DASHBOARD',
+        payload: data
       });
+    });
   }, [dispatch]);
 
   return (
@@ -63,7 +53,7 @@ export default function Dashboard() {
                 textColor: '#212529'
               })}
             />
-            <p className="small text-center mt-3">Orders Delivered</p>
+            <p className="small text-center mt-3">Completed</p>
           </Col>
           <Col>
             <CircularProgressbar
@@ -75,16 +65,29 @@ export default function Dashboard() {
                 textColor: '#212529'
               })}
             />
-            <p className="small text-center mt-3">Pending Delivery</p>
+            <p className="small text-center mt-3">Pending</p>
+          </Col>
+          <Col>
+            <CircularProgressbar
+              value={cancelled}
+              text={`${cancelled}`}
+              maxValue={totalOrders > 0 ? totalOrders : 1}
+              styles={buildStyles({
+                pathColor: 'rgba(232,47,83,0.7)',
+                textColor: '#212529'
+              })}
+            />
+            <p className="small text-center mt-3">Cancelled</p>
           </Col>
         </Row>
       </Col>
       <Col md={6} className="d-flex align-items-center flex-column justify-content-center">
         <p className="h3 text-uppercase">total sales</p>
         <p className="small text-muted text-uppercase">usd</p>
-        <p className="display-4 font-weight-bold">{totalSales}</p>
+        <p className="display-4 font-weight-bold">{+totalSales.toFixed(2)}</p>
       </Col>
       <Col md={7} className="border-right mt-5">
+        <p className="text-uppercase text-center">order history</p>
         <ResponsiveContainer
           width="100%"
           height={250}
@@ -106,15 +109,15 @@ export default function Dashboard() {
             <ProgressBar now={totalPercentCompleted} className="pa-sm-progress pa-success" />
           </Col>
           <Col md={6}>
-            <p className="small text-muted text-center mb-0">Late Deliveiesy</p>
-            <p className="h2">{+totalPercentPending.toFixed(2)}%</p>
-            <ProgressBar now={totalPercentPending} className="pa-sm-progress pa-danger" />
+            <p className="small text-muted text-center mb-0">Late Delivery</p>
+            <p className="h2">{+totalPercentPendings.toFixed(2)}%</p>
+            <ProgressBar now={totalPercentPendings} className="pa-sm-progress pa-danger" />
           </Col>
         </Row>
         <Row className="pt-4">
           <Col>
             <p className="small text-muted mb-0">Performace</p>
-            <p className={`h4 font-weight-bold pa-success ${performace > 0 ? 'pa-success' : 'pa-danger'}`}>{+performace.toFixed(2)}%</p>
+            <p className={`h4 font-weight-bold pa-success ${performance > 0 ? 'pa-success' : 'pa-danger'}`}>{+performance.toFixed(2)}%</p>
           </Col>
         </Row>
       </Col>

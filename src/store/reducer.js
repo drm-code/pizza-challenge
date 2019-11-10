@@ -1,19 +1,31 @@
 export default function reducer(state, action) {
   switch (action.type) {
-    case 'LOAD_DASHBOARD': {
+    case 'SET_DASHBOARD': {
       return {
         ...state,
-        dashboard: action.payload
+        dashboard: {
+          ...action.payload
+        }
       }
     }
-    case 'LOAD_ORDERS': {
+    case 'SET_ORDERS': {
       return {
         ...state,
-        orders: action.payload
+        orders: {
+          ...action.payload
+        }
+      }
+    }
+    case 'SET_PIZZAS': {
+      return {
+        ...state,
+        pizzas: [
+          ...action.payload
+        ]
       }
     }
     default: {
-      return state;
+      return state; 
     }
   }
 }

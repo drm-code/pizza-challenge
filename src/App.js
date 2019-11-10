@@ -12,7 +12,7 @@ import './App.css';
 
 library.add(far, fas);
 
-const initialState = JSON.parse(localStorage.getItem('pa-state') || '{}');
+const initialState = {};
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
